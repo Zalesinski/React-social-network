@@ -1,0 +1,31 @@
+.dialogs {
+    display: grid;
+    grid-template-columns: 2fr 10fr;
+}
+
+.dialogItems {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.dialogItems .active {
+    color: cyan;
+}
+
+.item {
+
+}
+
+.messages {
+    padding: 10px;
+}
+
+.message {
+
+}
+
+.ava {
+    width: 20px;
+    padding-right: 5px;
+}
