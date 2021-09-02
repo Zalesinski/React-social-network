@@ -31,13 +31,17 @@ export const authAPI = {
         return instance
             .get(`auth/me`)
     },
-    login (email, password, rememberMe = false) {
+    login (email, password, rememberMe = false, captcha) {
         return instance
-            .post(`auth/login`, {email, password, rememberMe});
+            .post(`auth/login`, {email, password, rememberMe, captcha});
     },
     logout () {
         return instance
             .delete(`auth/login`);
+    },
+    getCaptcha () {
+        return instance
+            .get(`auth/login`);
     }
 }
 
@@ -56,5 +60,22 @@ export const profileAPI = {
     updateStatus (status) {
         return instance
             .put(`profile/status`, {status})
+    },
+    saveAva (file) {
+        const formData = new FormData();
+        formData.append("image", file)
+        return instance
+            .put(`profile/photo`, formData)
+    },
+    saveProfile(profile) {
+        return instance
+            .put(`profile`, profile)
+    }
+}
+
+export const securityAPI = {
+    getCaptcha () {
+        return instance
+            .get(`security/get-captcha-url`);
     }
 }

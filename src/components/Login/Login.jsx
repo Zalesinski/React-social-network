@@ -2,10 +2,12 @@ import React from "react";
 import {Field, reduxForm} from "redux-form";
 import {Input} from "../common/FormControls/FormControls";
 import {maxLengthCreator, requiredField} from "../../utils/validators/validators";
-import {login} from "../../redux/auth-reducer";
+import {getCaptcha, login} from "../../redux/auth-reducer";
 import {connect} from "react-redux";
 import {Redirect} from "react-router-dom";
-import style from "./../common/FormControls/FormControls.module.css"
+import style from "./../common/FormControls/FormControls.module.css";
+import {captcha} from "./Login.module.css";
+import classNames from "classnames";
 
 const maxLength28 = maxLengthCreator(28);
 
@@ -22,7 +24,10 @@ const LoginForm = (props) => {
             <div>
                 <Field component={"input"} name={"rememberMe"} type={"checkbox"}/> remember me
             </div>
-            {props.error && <div className={style.formControl + " " + style.error}>{props.error}</div>}
+            {props.captcha &&
+            <div><img className={captcha} src={props.captcha} alt="captcha"/><br/>
+            <Field placeholder={"Symbols from image"} component={Input} name={"captcha"} validate={[requiredField]}/></div>}
+            {props.error && <div className={classNames(style.formControl, style.error) }>{props.error}</div>}
             <div>
                 <button>Log in</button>
             </div>
@@ -36,7 +41,7 @@ const LoginFormRedux = reduxForm({
 
 const Login = (props) => {
     const onSubmit = (formData) => {
-        props.login(formData.login, formData.password, formData.rememberMe)
+        props.login(formData.login, formData.password, formData.rememberMe, formData.captcha)
     }
 
     if (props.isLoggedIn) {
@@ -46,13 +51,14 @@ const Login = (props) => {
     return (
         <div>
             <h1>LOGIN</h1>
-            <LoginFormRedux onSubmit={onSubmit}/>
+            <LoginFormRedux onSubmit={onSubmit} captcha={props.captcha}/>
         </div>
     )
 }
 
 const mapStateToProps = (state) => ({
-    isLoggedIn: state.auth.isLoggedIn
+    isLoggedIn: state.auth.isLoggedIn,
+    captcha: state.auth.captcha
 })
 
-export default connect(mapStateToProps, {login})(Login);
+export default connect(mapStateToProps, {login, getCaptcha})(Login);

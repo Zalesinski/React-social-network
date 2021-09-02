@@ -1,8 +1,10 @@
 import {profileAPI} from "../API/api";
+import {stopSubmit} from "redux-form";
 
 const ADD_POST = 'ADD-POST';
 const SET_PROFILE = 'SET_PROFILE';
 const SET_STATUS = 'SET_STATUS';
+const SET_AVA = 'SET_AVA';
 const DELETE_POST = 'DELETE_POST';
 
 let initialState = {
@@ -45,6 +47,12 @@ const profileReducer = (state = initialState, action) => {
                 posts: state.posts.filter(post => post.id != action.postId)
             }
             break;
+        case SET_AVA:
+            return {
+                ...state,
+                profile: {...state.profile, photos: action.file}
+            }
+            break;
         default:
             return state;
     }
@@ -64,6 +72,9 @@ export const setStatus = (status) =>
 
 export const deletePost = (postId) =>
     ({type: DELETE_POST, postId});
+
+export const setAva = (file) =>
+    ({type: SET_AVA, file})
 
 export const getProfile = (userId) => {
     return async (dispatch) => {
@@ -87,6 +98,32 @@ export const updateStatus = (status) => {
         let response = await profileAPI.updateStatus(status)
         if (response.data.resultCode === 0) {
             dispatch(setStatus(status))
+        }
+    }
+}
+
+export const saveAva = (file) => {
+    return async (dispatch) => {
+        let response = await profileAPI.saveAva(file)
+        if (response.data.resultCode === 0) {
+            dispatch(setAva(response.data.data.photos))
+        }
+    }
+}
+
+export const saveProfile = (profile) => {
+    return async (dispatch, getState) => {
+        const userId = getState().auth.userId;
+        const response = await profileAPI.saveProfile(profile);
+        if (response.data.resultCode === 0) {
+            dispatch(getProfile(userId));
+        } else {
+            if (response.data.messages[0].match(/>\w+/gm)) {
+                let field = response.data.messages[0].match(/>\w+/gm)[0].slice(1).toLowerCase();
+                dispatch(stopSubmit("editProfile", {"contacts": {[field]: response.data.messages[0]}}));
+            }
+
+            return Promise.reject();
         }
     }
 }

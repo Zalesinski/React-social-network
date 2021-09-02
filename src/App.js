@@ -1,12 +1,10 @@
 import React, {Suspense} from 'react';
 import './App.css';
 import Navbar from "./components/Navbar/Navbar.jsx";
-import {Route, Switch, withRouter} from "react-router-dom";
+import {Redirect, Route, Switch, withRouter} from "react-router-dom";
 import News from "./components/News/News";
 import Music from "./components/Music/Music";
 import Settings from "./components/Settings/Settings";
-// import DialogsContainer from "./components/Dialogs/DialogsContainer";
-// import UsersContainer from "./components/Users/UsersContainer";
 import ProfileContainer from "./components/Profile/ProfileContainer";
 import HeaderContainer from "./components/Header/HeaderContainer";
 import Login from "./components/Login/Login";
@@ -19,9 +17,17 @@ const DialogsContainer = React.lazy(() => import("./components/Dialogs/DialogsCo
 const UsersContainer = React.lazy(() => import("./components/Users/UsersContainer"));
 
 class App extends React.Component {
+    catchAllUnhandledErrors = () => {
+        alert("Unhandled error occured")
+    }
     componentDidMount() {
         this.props.initializeApp();
+        window.addEventListener("unhandledrejection", this.catchAllUnhandledErrors)
     }
+    componentWillUnmount() {
+        window.removeEventListener("unhandledrejection", this.catchAllUnhandledErrors)
+    }
+
     render() {
         if (!this.props.initialized) return <Preloader/>
         return (
@@ -57,6 +63,10 @@ class App extends React.Component {
                             </Route>
                             <Route path='/settings'>
                                 <Settings/>
+                            </Route>
+                            <Redirect from="/" to="/profile" />
+                            <Route path='*'>
+                                <div>404 not found</div>
                             </Route>
                         </Switch>
                     </div>
