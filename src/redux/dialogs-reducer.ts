@@ -1,5 +1,21 @@
 const ADD_MESSAGE = 'ADD_MESSAGE';
 
+type MessageType = {
+    id: number,
+    message: string,
+    ava: string
+}
+type MessagesType = [MessageType];
+
+type DialogsType = [DialogType]
+type DialogType = {
+    id: number
+    message: string
+}
+type InitialStateType = {
+    messages: MessagesType,
+    dialogs: DialogsType
+}
 let initialState = {
     messages: [
         {id: 1, message: "Hi", ava: "https://s2.coinmarketcap.com/static/img/coins/200x200/9231.png"},
@@ -24,7 +40,7 @@ let initialState = {
     ]
 }
 
-const dialogsReducer = (state = initialState, action) => {
+const dialogsReducer = (state = initialState, action: any) => {
     switch (action.type) {
         case ADD_MESSAGE:
             return {
@@ -50,5 +66,9 @@ const dialogsReducer = (state = initialState, action) => {
 
 export default dialogsReducer;
 
+type AddMessageActionType = {
+    type: typeof ADD_MESSAGE
+    newMessage: string
+}
 
-export const addMessageActionCreator = (newMessage) => ({type: ADD_MESSAGE, newMessage});
+export const addMessageActionCreator = (newMessage: string): AddMessageActionType => ({type: ADD_MESSAGE, newMessage});

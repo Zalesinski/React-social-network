@@ -1,4 +1,5 @@
 import {authAPI, usersAPI} from "../API/api";
+import {PhotosType} from "./profile-reducer";
 
 const FOLLOW = 'FOLLOW';
 const SET_USERS = 'SET_USERS';
@@ -7,7 +8,22 @@ const SET_TOTAL = 'SET_TOTAL';
 const TOGGLE_IS_LOADING = "TOGGLE_IS_LOADING";
 const TOGGLE_IS_IN_PROGRESS = "TOGGLE_IS_IN_PROGRESS"
 
-let initialState = {
+type UserType = {
+    id: number
+    name: string
+    status: string
+    photos: PhotosType
+    followed: boolean
+}
+type StateType = {
+    users: Array<UserType>,
+    pageSize: number
+    totalUsersCount: number
+    selectedPage: number
+    isLoading: boolean
+    isInProgress: Array<number>
+}
+let initialState: StateType = {
     users: [],
     pageSize: 5,
     totalUsersCount: 0,
@@ -16,7 +32,7 @@ let initialState = {
     isInProgress: []
 }
 
-const usersReducer = (state = initialState, action) => {
+const usersReducer = (state = initialState, action: any) => {
     switch (action.type) {
         case FOLLOW:
             return {
@@ -70,16 +86,44 @@ const usersReducer = (state = initialState, action) => {
 
 export default usersReducer;
 
+type FollowAcceptActionType = {
+    type: typeof FOLLOW
+    userId: number
+}
+export const followAccept = (userId: number): FollowAcceptActionType => ({type: FOLLOW, userId});
 
-export const followAccept = (userId) => ({type: FOLLOW, userId});
-export const setUsers = (users) => ({type: SET_USERS, users});
-export const selectPage = (selectedPage) => ({type: SELECT_PAGE, selectedPage});
-export const setTotal = (totalUsersCount) => ({type: SET_TOTAL, totalUsersCount});
-export const toggleIsLoading = () => ({type: TOGGLE_IS_LOADING});
-export const toggleIsInProgress = (userId, isFetching) => ({type: TOGGLE_IS_IN_PROGRESS, userId, isFetching});
+type SetUsersActionType = {
+    type: typeof SET_USERS
+    users: Array<UserType>
+}
+export const setUsers = (users: Array<UserType>): SetUsersActionType => ({type: SET_USERS, users});
 
-export const getUsers = (selectedPage, pageSize) => {
-    return async (dispatch) => {
+type SelectPageActionType = {
+    type: typeof SELECT_PAGE
+    selectedPage: number
+}
+export const selectPage = (selectedPage: number): SelectPageActionType => ({type: SELECT_PAGE, selectedPage});
+
+type SetTotalActionType = {
+    type: typeof SET_TOTAL
+    totalUsersCount: number
+}
+export const setTotal = (totalUsersCount: number): SetTotalActionType => ({type: SET_TOTAL, totalUsersCount});
+
+type ToggleIsLoadingActionType = {
+    type: typeof TOGGLE_IS_LOADING
+}
+export const toggleIsLoading = (): ToggleIsLoadingActionType => ({type: TOGGLE_IS_LOADING});
+
+type ToggleIsInProgressActionType = {
+    type: typeof TOGGLE_IS_IN_PROGRESS
+    userId: number
+    isFetching: boolean
+}
+export const toggleIsInProgress = (userId: number, isFetching: boolean): ToggleIsInProgressActionType => ({type: TOGGLE_IS_IN_PROGRESS, userId, isFetching});
+
+export const getUsers = (selectedPage: number, pageSize: number) => {
+    return async (dispatch: any) => {
         dispatch(selectPage(selectedPage));
         dispatch(toggleIsLoading());
         let data = await usersAPI.getUsers(selectedPage, pageSize)
@@ -91,8 +135,8 @@ export const getUsers = (selectedPage, pageSize) => {
 
 
 
-export const follow = (user) => {
-    return async (dispatch) => {
+export const follow = (user: UserType) => {
+    return async (dispatch: any) => {
         dispatch(toggleIsInProgress(user.id, true));
         if (user.followed) {
             let data = await usersAPI.unfollowUser(user.id)

@@ -7,7 +7,7 @@ import {connect} from "react-redux";
 import {Redirect} from "react-router-dom";
 import style from "./../common/FormControls/FormControls.module.css";
 import {captcha} from "./Login.module.css";
-import classNames from "classnames";
+import classNames from "classnames"
 
 const maxLength28 = maxLengthCreator(28);
 
